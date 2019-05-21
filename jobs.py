@@ -79,7 +79,8 @@ class SchedulingTask:
             job_list = []
             for line in f:
                 j = Job()
-                line = line[:-1]
+                if line[-1] == "\n":
+                    line = line[:-1]
                 while line[0] == " ":
                     line = line[1:]
                 while line[-1] == " ":
