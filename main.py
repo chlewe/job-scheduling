@@ -1,4 +1,5 @@
 from typing import List
+import random
 
 
 class Operation:
@@ -93,3 +94,17 @@ class SchedulingTask:
         for job, job_id in self.jobs:
             out += "Job " + str(job_id) + "\n" + str(job) + "\n\n"
         return out
+
+    # Solving related stuff
+    def random_schedule(self):
+        """Return a random schedule, represented by a list of tuples each containing the operation and its job"""
+        to_be_scheduled = [[tuple((op, job_id)) for op in job.operations] for job, job_id in self.jobs]
+        schedule = []
+        while to_be_scheduled:
+            next_job = random.choice(to_be_scheduled)
+            next_operation = next_job[0]
+            schedule.append(next_operation)
+            next_job.pop(0)
+            if [] in to_be_scheduled:
+                to_be_scheduled.remove([])
+        return schedule
