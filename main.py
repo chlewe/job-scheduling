@@ -114,5 +114,5 @@ if __name__ == "__main__":
     scheduling_task = SchedulingTask()
     scheduling_task.add_from_file("instance_abz5.txt")
     print(scheduling_task)
-    for op, job in scheduling_task.random_schedule():
-        print("Job " + str(job) + " does operation on machine " + str(op.machine) + " for time " + str(op.time))
+    for o, jid in scheduling_task.random_schedule():
+        print("Job " + str(jid) + " does operation on machine " + str(o.machine) + " for time " + str(o.time))
