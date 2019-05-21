@@ -129,6 +129,7 @@ class SchedulingTask:
         for job, job_id in self.jobs:
             job_schedule = [op for op, j_id in schedule if j_id == job_id]
             if job.operations != job_schedule:
+                print(job_id)
                 return False
         return True
 
@@ -186,7 +187,7 @@ class SchedulingTask:
                 if swap_job_id in forbidden_job_swaps:
                     break
                 else:
-                    swaps.append(tuple((i, k)))
+                    swaps.append(tuple((i, i+k)))
                     forbidden_job_swaps.append(swap_job_id)
                 k += 1
         return swaps
