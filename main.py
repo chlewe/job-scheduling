@@ -108,3 +108,11 @@ class SchedulingTask:
             if [] in to_be_scheduled:
                 to_be_scheduled.remove([])
         return schedule
+
+
+if __name__ == "__main__":
+    scheduling_task = SchedulingTask()
+    scheduling_task.add_from_file("instance_abz5.txt")
+    print(scheduling_task)
+    for op, job in scheduling_task.random_schedule():
+        print("Job " + str(job) + " does operation on machine " + str(op.machine) + " for time " + str(op.time))
