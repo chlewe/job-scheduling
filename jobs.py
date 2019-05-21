@@ -154,10 +154,10 @@ class SchedulingTask:
 
     @staticmethod
     def get_neighbours_direct(schedule):
-        """ For a schedule, return all valid schedules that have two adjacent operations swapped """
+        """ For a schedule, return all valid swaps of adjacent operation that produce valid schedules """
         neighbour_swaps = []
         for i, (op, job_id) in enumerate(schedule):
-            if i == len(schedule):
+            if i == len(schedule)-1:
                 break
             next_op, next_job_id = schedule[i+1]
             if job_id != next_job_id:
