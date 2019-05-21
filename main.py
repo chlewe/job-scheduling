@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 import random
 
 
@@ -7,6 +7,9 @@ class Operation:
     def __init__(self, time, machine):
         self.time = time
         self.machine = machine
+
+    def __str__(self):
+        return "Operation with time " + str(self.time) + " on machine " + str(self.machine)
 
 
 class Job:
@@ -54,6 +57,12 @@ class SchedulingTask:
         for job in jobs:
             self.jobs.append(tuple((job, self.next_id)))
             self.next_id += 1
+
+    def get_job_by_id(self, job_id):
+        for job, j_id in self.jobs:
+            if job_id == j_id:
+                return job
+        return None
 
     def add_from_file(self, path_to_file, replace_jobs=False):
         """
@@ -109,10 +118,25 @@ class SchedulingTask:
                 to_be_scheduled.remove([])
         return schedule
 
+    def schedule_validity(self, schedule: List[Tuple[Operation, int]]):
+        # Check whether operations belong to given job
+        for op, job_id in schedule:
+            job = self.get_job_by_id(job_id)
+            if op not in job.operations:
+                return False
+        # Check whether operation order withing jobs is preserved
+        for job, job_id in self.jobs:
+            job_schedule = [op for op, j_id in schedule if j_id == job_id]
+            if job.operations != job_schedule:
+                return False
+        return True
+
 
 if __name__ == "__main__":
     scheduling_task = SchedulingTask()
     scheduling_task.add_from_file("instance_abz5.txt")
     print(scheduling_task)
-    for o, jid in scheduling_task.random_schedule():
+    s = scheduling_task.random_schedule()
+    for o, jid in s:
         print("Job " + str(jid) + " does operation on machine " + str(o.machine) + " for time " + str(o.time))
+    print("Schedule is " + "valid" if scheduling_task.schedule_validity(s) else "not valid")
