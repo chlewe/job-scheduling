@@ -151,3 +151,29 @@ class SchedulingTask:
             job_blocking[job_id] = end_time
             machine_blocking[op.machine] = end_time
         return max(job_blocking.values())
+
+    @staticmethod
+    def get_neighbours_direct(schedule):
+        """ For a schedule, return all valid schedules that have two adjacent operations swapped """
+        neighbour_swaps = []
+        for i, (op, job_id) in enumerate(schedule):
+            if i == len(schedule):
+                break
+            next_op, next_job_id = schedule[i+1]
+            if job_id != next_job_id:
+                neighbour_swaps.append(tuple((i, i+1)))
+        return neighbour_swaps
+
+    @staticmethod
+    def get_random_neighbour_direct(schedule):
+        """ For a schedule, return a valid schedule that has two adjacent operations swapped """
+        neighbours = SchedulingTask.get_neighbours_direct(schedule)
+        i, j = random.choice(neighbours)
+        new_schedule = schedule.copy()
+        new_schedule[i], new_schedule[j] = new_schedule[j], new_schedule[i]
+        return new_schedule
+
+    def get_neighbours_arbitrary(self, schedule):
+        """ For a schedule, return all valid schedules that have two operations swapped """
+        # TODO: implement
+        return
