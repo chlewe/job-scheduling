@@ -159,7 +159,7 @@ class SchedulingTask:
         for i, (op, job_id) in enumerate(schedule):
             if i == len(schedule)-1:
                 break
-            next_op, next_job_id = schedule[i+1]
+            _, next_job_id = schedule[i+1]
             if job_id != next_job_id:
                 neighbour_swaps.append(tuple((i, i+1)))
         return neighbour_swaps
@@ -173,7 +173,28 @@ class SchedulingTask:
         new_schedule[i], new_schedule[j] = new_schedule[j], new_schedule[i]
         return new_schedule
 
-    def get_neighbours_arbitrary(self, schedule):
+    @staticmethod
+    def get_neighbours_arbitrary(schedule):
         """ For a schedule, return all valid schedules that have two operations swapped """
-        # TODO: implement
-        return
+        swaps = []
+        for i, (op, job_id) in enumerate(schedule):
+            forbidden_job_swaps = [job_id]
+            k = 1
+            while i+k < len(schedule):
+                _, swap_job_id = schedule[i + k]
+                if swap_job_id in forbidden_job_swaps:
+                    break
+                else:
+                    swaps.append(tuple((i, k)))
+                    forbidden_job_swaps.append(swap_job_id)
+                k += 1
+        return swaps
+
+    @staticmethod
+    def get_random_neighbour_arbitrary(schedule):
+        """ For a schedule, return a valid schedule that has two operations swapped """
+        neighbours = SchedulingTask.get_neighbours_arbitrary(schedule)
+        i, j = random.choice(neighbours)
+        new_schedule = schedule.copy()
+        new_schedule[i], new_schedule[j] = new_schedule[j], new_schedule[i]
+        return new_schedule
