@@ -35,19 +35,26 @@ class Job:
 
 class SchedulingTask:
 
+    # Structural stuff
     def __init__(self, jobs: List[Job] = None):
+        self.next_id = 0
+        self.jobs = []
         if jobs is None:
             jobs = []
-        self.jobs = jobs
+        for job in jobs:
+            self.jobs.append(tuple((job, self.next_id)))
+            self.next_id += 1
 
     def add_job(self, job):
-        self.jobs.append(job)
+        self.jobs.append(tuple((job, self.next_id)))
+        self.next_id += 1
 
     def add_jobs(self, jobs):
         for job in jobs:
-            self.jobs.append(job)
+            self.jobs.append(tuple((job, self.next_id)))
+            self.next_id += 1
 
-    def add_from_file(self, path_to_file, replace_jobs = False):
+    def add_from_file(self, path_to_file, replace_jobs=False):
         """
         Add all jobs from the given file to the scheduling instance.
         Expected format is jobs separated by \n and operations given by machine time separated by blanks, e.g.
@@ -69,7 +76,7 @@ class SchedulingTask:
                 while "  " in line:
                     line = line.replace("  ", " ")
                 line = line.split(" ")
-                if len(line)%2 != 0:
+                if len(line) % 2 != 0:
                     print("Couldn't read file " + path_to_file + " as a job contained an odd number of values.")
                     return
                 for (machine, time) in zip(line[::2], line[1::2]):
@@ -82,6 +89,6 @@ class SchedulingTask:
 
     def __str__(self):
         out = ""
-        for i, job in enumerate(self.jobs):
-            out += "Job " + str(i) + "\n" + str(job) + "\n\n"
+        for job, job_id in self.jobs:
+            out += "Job " + str(job_id) + "\n" + str(job) + "\n\n"
         return out
