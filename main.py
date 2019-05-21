@@ -91,7 +91,7 @@ class SchedulingTask:
                     print("Couldn't read file " + path_to_file + " as a job contained an odd number of values.")
                     return
                 for (machine, time) in zip(line[::2], line[1::2]):
-                    op = Operation(time, machine)
+                    op = Operation(int(time), int(machine))
                     j.add_operation(op)
                 job_list.append(j)
         if replace_jobs:
@@ -131,6 +131,27 @@ class SchedulingTask:
                 return False
         return True
 
+    @staticmethod
+    def get_schedule_time(schedule: List[Tuple[Operation, int]]):
+        """ For a given schedule, compute how much time passes for all operations to finish """
+        # TODO: make this return a schedule, not just time
+        # for each job, save how long scheduling an operation of this job
+        # is blocked by the execution of a previous operation of that job
+        job_blocking = {}
+        # for each machine, save how long it is blocked by an operation
+        machine_blocking = {}
+
+        for op, job_id in schedule:
+            earliest_scheduling_time = 0
+            if job_id in job_blocking:
+                earliest_scheduling_time = job_blocking.get(job_id)
+            if op.machine in machine_blocking:
+                earliest_scheduling_time = max(earliest_scheduling_time, machine_blocking[op.machine])
+            end_time = earliest_scheduling_time + op.time
+            job_blocking[job_id] = end_time
+            machine_blocking[op.machine] = end_time
+        return max(job_blocking.values())
+
 
 if __name__ == "__main__":
     scheduling_task = SchedulingTask()
@@ -140,3 +161,5 @@ if __name__ == "__main__":
     for o, jid in s:
         print("Job " + str(jid) + " does operation on machine " + str(o.machine) + " for time " + str(o.time))
     print("Schedule is " + "valid" if scheduling_task.schedule_validity(s) else "not valid")
+    length = SchedulingTask.get_schedule_time(s)
+    print("Schedule takes " + str(length) + " time")
