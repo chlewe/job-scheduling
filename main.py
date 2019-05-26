@@ -4,7 +4,7 @@ from annealing import *
 
 if __name__ == "__main__":
     scheduling_task = SchedulingTask()
-    scheduling_task.add_from_file("tai_15_15_1.txt")
+    scheduling_task.add_from_file("tai_15_15_1.split", split_format=True)
     sa = SimulatedAnnealing(20,
                             scheduling_task.random_schedule,
                             SchedulingTask.get_random_neighbour_arbitrary,
