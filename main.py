@@ -1,11 +1,19 @@
+from annealing import SimulatedAnnealing
+from math import log
 from scheduling import SchedulingTask
-from annealing import *
+from time import time
+import re
+import sys
 
+
+def temperature_series(time):
+    temperature = 20 / log(time + 1)
+    return temperature
 
 if __name__ == "__main__":
     scheduling_task = SchedulingTask()
-    scheduling_task.add_from_file("tai_15_15_1.split", split_format=True)
-    sa = SimulatedAnnealing(20,
+    scheduling_task.add_from_file(path_to_file, split_format=split_format)
+    sa = SimulatedAnnealing(temperature_series,
                             scheduling_task.random_schedule,
                             SchedulingTask.get_random_neighbour_arbitrary,
                             SchedulingTask.get_schedule_time)
