@@ -32,7 +32,7 @@ class Job:
         machines = "Machine  "
         for i, operation in enumerate(self.operations):
             operations += " " * (7 - len(str(i))) + str(i)
-            times += " "*(7-len(str(operation.time))) + str(operation.time)
+            times += " "*(7 - len(str(operation.time))) + str(operation.time)
             machines += " " * (7 - len(str(operation.machine))) + str(operation.machine)
         return operations + "\n" + times + "\n" + machines
 

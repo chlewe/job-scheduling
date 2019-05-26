@@ -12,15 +12,15 @@ class SimulatedAnnealing:
         self.time = 1
 
     def get_temperature(self):
-        return self.temperature_modifier/log(self.time+1)
+        return self.temperature_modifier/log(self.time + 1)
 
     def random_transition(self, difference):
-        return e**(-difference/self.get_temperature()) >= random()
+        return e**(-difference / self.get_temperature()) >= random()
 
     def do_annealing_step(self):
         neighbour = self.neighbouring_function(self.state)
         current_value = self.evaluation_function(self.state)
         neighbour_value = self.evaluation_function(neighbour)
-        if neighbour_value < current_value or self.random_transition(neighbour_value-current_value):
+        if neighbour_value < current_value or self.random_transition(neighbour_value - current_value):
             self.state = neighbour
         self.time += 1
