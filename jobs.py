@@ -6,6 +6,12 @@ class Operation:
         self.time = time
         self.machine = machine
 
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            if self.time == other.time and self.machine == other.machine:
+                return True
+        return False
+
     def __str__(self):
         return "Operation with time " + str(self.time) + " on machine " + str(self.machine)
 
@@ -16,6 +22,12 @@ class Job:
         if operations is None:
             operations = []
         self.operations = operations
+
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            if self.operations == other.operations:
+                return True
+        return False
 
     def add_operation(self, op):
         self.operations.append(op)
