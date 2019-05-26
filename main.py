@@ -1,4 +1,4 @@
-from jobs import *
+from scheduling import SchedulingTask
 from annealing import *
 
 
