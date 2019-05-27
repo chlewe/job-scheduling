@@ -37,6 +37,7 @@ if __name__ == "__main__":
                             SchedulingTask.get_random_neighbour_arbitrary,
                             SchedulingTask.get_schedule_time)
 
+    print(sa.evaluation_function(sa.state))
     beginning = time()
     while True:
         sa.do_annealing_step()
