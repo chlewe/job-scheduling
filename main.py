@@ -5,10 +5,31 @@ from time import time
 import re
 import sys
 
+def exp_series(time):
+    global temperature0
+    return temperature0 * (0.95 ** time)
+def fast_series(time):
+    global temperature0
+    return temperature0 / time
+def boltz_series(time):
+    global temperature0
+    if time <= 1:
+        return 1000000
+    else:
+        return temperature0 / log(time)
 
-def temperature_series(time):
-    temperature = 20 / log(time + 1)
-    return temperature
+def safe_log_series(time):
+    global temperature0
+    return temperature0 / log(time + 1)
+def squared_boltz_series(time):
+    global temperature0
+    if time <= 1:
+        return 1000000
+    else:
+        return temperature0 / (log(time) ** 2)
+def linear_series(time):
+    global temperature0
+    return max(temperature0 - 0.25 * time, 5)
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
@@ -30,9 +51,10 @@ if __name__ == "__main__":
     else:
         timeout = 5
 
+    temperature0 = timeout * 2
     scheduling_task = SchedulingTask()
     scheduling_task.add_from_file(path_to_file, split_format=split_format)
-    sa = SimulatedAnnealing(temperature_series,
+    sa = SimulatedAnnealing(safe_log_series,
                             scheduling_task.random_schedule,
                             SchedulingTask.get_random_neighbour_arbitrary,
                             SchedulingTask.get_schedule_time)
@@ -44,6 +66,7 @@ if __name__ == "__main__":
         if time() - beginning >= timeout:
             break
     print(sa.evaluation_function(sa.state))
+    print("Total time steps: {}".format(sa.time))
 
     #for i in range(200000):
     #    if sa.time % 10000 == 1:
