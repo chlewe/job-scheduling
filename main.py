@@ -8,7 +8,9 @@ import sys
 def exp_series(time):
     global temperature0
     global last_time
-    temperature0 = temperature0 * 0.999 ** (time - last_time)
+    global exp_decay
+
+    temperature0 = temperature0 * exp_decay ** (time - last_time)
     last_time = time
     return temperature0
 def fast_series(time):
@@ -59,7 +61,9 @@ if __name__ == "__main__":
         if time() - beginning >= timeout / 5:
             break
 
-    temperature0 = round(3 / (0.999 ** (sa.time * 5)))
+    temperature0 = 1000
+    exp_decay = 0.003 ** (1 / (sa.time * 5))
+    print(exp_decay, sa.time * 5)
     last_time = 0
 
     sa = SimulatedAnnealing(exp_series,
