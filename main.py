@@ -63,7 +63,8 @@ if __name__ == "__main__":
 
     temperature0 = 1000
     exp_decay = 0.003 ** (1 / (sa.time * 5))
-    print(exp_decay, sa.time * 5)
+    print("Expected number of annealing steps:", sa.time * 5)
+    print("Set exponential decay factor to", exp_decay)
     last_time = 0
 
     sa = SimulatedAnnealing(exp_series,
@@ -72,11 +73,12 @@ if __name__ == "__main__":
                             SchedulingTask.get_schedule_time)
 
     print("Start temperature: {}".format(temperature0))
-    print(sa.evaluation_function(sa.state))
+    print("Created first random schedule with time", sa.evaluation_function(sa.state))
     beginning = time()
     while True:
         sa.do_annealing_step()
         if time() - beginning >= timeout:
             break
-    print(sa.evaluation_function(sa.state))
     print("Final temperature: {}\nTotal time steps: {}".format(sa.get_temperature(), sa.time))
+
+    print("\nTime of final schedule:", sa.evaluation_function(sa.state))
