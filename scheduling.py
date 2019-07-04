@@ -1,5 +1,5 @@
 from jobs import Job, Operation
-from parser import read_jobs_from_file_merged, read_jobs_from_file_split
+from job_parser import read_jobs_from_file_merged, read_jobs_from_file_split
 from typing import List, Tuple
 import random
 
