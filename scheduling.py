@@ -114,29 +114,8 @@ class SchedulingTask:
         return max(job_blocking.values())
 
     @staticmethod
-    def get_neighbours_direct(schedule):
-        """ For a schedule, return all valid swaps of adjacent operation that produce valid schedules """
-        neighbour_swaps = []
-        for i, (op, job_id) in enumerate(schedule):
-            if i == len(schedule) - 1:
-                break
-            _, next_job_id = schedule[i + 1]
-            if job_id != next_job_id:
-                neighbour_swaps.append(tuple((i, i + 1)))
-        return neighbour_swaps
-
-    @staticmethod
-    def get_random_neighbour_direct(schedule):
-        """ For a schedule, return a valid schedule that has two adjacent operations swapped """
-        neighbours = SchedulingTask.get_neighbours_direct(schedule)
-        i, j = random.choice(neighbours)
-        new_schedule = schedule.copy()
-        new_schedule[i], new_schedule[j] = new_schedule[j], new_schedule[i]
-        return new_schedule
-
-    @staticmethod
     def get_neighbours_arbitrary(schedule):
-        """ For a schedule, return all valid schedules that have two operations swapped """
+        """ For a schedule, return all valid swaps of arbitrarily-placed operations that produce a valid schedule """
         swaps = []
         for i, (op, job_id) in enumerate(schedule):
             forbidden_job_swaps = [job_id]
@@ -152,10 +131,56 @@ class SchedulingTask:
         return swaps
 
     @staticmethod
+    def get_neighbours_local_arbitrary(schedule):
+        """ For a schedule, return all valid swaps of arbitrarily-placed operations that produce a valid schedule """
+        i, (op, job_id) = random.choice(list(enumerate(schedule)))
+
+        swaps = []
+        forbidden_job_swaps = [job_id]
+        seen_machines = [op.machine]
+        k = 1
+        while i+k < len(schedule):
+            op, swap_job_id = schedule[i + k]
+            if swap_job_id in forbidden_job_swaps:
+                break
+            else:
+                if op.machine in seen_machines:
+                    swaps.append((i, i + k))
+                    forbidden_job_swaps.append(swap_job_id)
+                else:
+                    seen_machines.append(op.machine)
+            k += 1
+        return swaps
+
+    @staticmethod
     def get_random_neighbour_arbitrary(schedule):
         """ For a schedule, return a valid schedule that has two operations swapped """
-        neighbours = SchedulingTask.get_neighbours_arbitrary(schedule)
+        neighbours = []
+
+        while not neighbours:
+            neighbours = SchedulingTask.get_neighbours_local_arbitrary(schedule)
         i, j = random.choice(neighbours)
         new_schedule = schedule.copy()
         new_schedule[i], new_schedule[j] = new_schedule[j], new_schedule[i]
         return new_schedule
+
+    #@staticmethod
+    #def get_neighbours_direct(schedule):
+    #    """ For a schedule, return all valid swaps of adjacent operations that produce valid schedules """
+    #    neighbour_swaps = []
+    #    for i, (op, job_id) in enumerate(schedule):
+    #        if i == len(schedule) - 1:
+    #            break
+    #        _, next_job_id = schedule[i + 1]
+    #        if job_id != next_job_id:
+    #            neighbour_swaps.append(tuple((i, i + 1)))
+    #    return neighbour_swaps
+
+    #@staticmethod
+    #def get_random_neighbour_direct(schedule):
+    #    """ For a schedule, return a valid schedule that has two adjacent operations swapped """
+    #    neighbours = SchedulingTask.get_neighbours_direct(schedule)
+    #    i, j = random.choice(neighbours)
+    #    new_schedule = schedule.copy()
+    #    new_schedule[i], new_schedule[j] = new_schedule[j], new_schedule[i]
+    #    return new_schedule

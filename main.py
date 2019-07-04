@@ -7,26 +7,20 @@ import sys
 
 def exp_series(time):
     global temperature0
-    return temperature0 * (0.95 ** time)
+    global last_time
+    temperature0 = temperature0 * 0.999 ** (time - last_time)
+    last_time = time
+    return temperature0
 def fast_series(time):
     global temperature0
     return temperature0 / time
 def boltz_series(time):
     global temperature0
-    if time <= 1:
-        return 1000000
-    else:
-        return temperature0 / log(time)
-
-def safe_log_series(time):
-    global temperature0
     return temperature0 / log(time + 1)
-def squared_boltz_series(time):
+
+def root_boltz_series(time):
     global temperature0
-    if time <= 1:
-        return 1000000
-    else:
-        return temperature0 / (log(time) ** 2)
+    return temperature0 / (log(time + 1) ** 0.5)
 def linear_series(time):
     global temperature0
     return max(temperature0 - 0.25 * time, 5)
@@ -51,14 +45,29 @@ if __name__ == "__main__":
     else:
         timeout = 5
 
-    temperature0 = timeout * 2
     scheduling_task = SchedulingTask()
     scheduling_task.add_from_file(path_to_file, split_format=split_format)
-    sa = SimulatedAnnealing(safe_log_series,
+
+    sa = SimulatedAnnealing(lambda x: 100,
                             scheduling_task.random_schedule,
                             SchedulingTask.get_random_neighbour_arbitrary,
                             SchedulingTask.get_schedule_time)
 
+    beginning = time()
+    while True:
+        sa.do_annealing_step()
+        if time() - beginning >= timeout / 5:
+            break
+
+    temperature0 = round(3 / (0.999 ** (sa.time * 5)))
+    last_time = 0
+
+    sa = SimulatedAnnealing(exp_series,
+                            scheduling_task.random_schedule,
+                            SchedulingTask.get_random_neighbour_arbitrary,
+                            SchedulingTask.get_schedule_time)
+
+    print("Start temperature: {}".format(temperature0))
     print(sa.evaluation_function(sa.state))
     beginning = time()
     while True:
@@ -66,12 +75,4 @@ if __name__ == "__main__":
         if time() - beginning >= timeout:
             break
     print(sa.evaluation_function(sa.state))
-    print("Total time steps: {}".format(sa.time))
-
-    #for i in range(200000):
-    #    if sa.time % 10000 == 1:
-    #        print(str((sa.time - 1)/2000) + "%")
-    #        print(sa.evaluation_function(sa.state))
-    #    sa.do_annealing_step()
-    #print(sa.state)
-    #print(sa.evaluation_function(sa.state))
+    print("Final temperature: {}\nTotal time steps: {}".format(sa.get_temperature(), sa.time))
