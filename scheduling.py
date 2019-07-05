@@ -8,7 +8,7 @@ class SchedulingTask:
 
     # Structural stuff
     def __init__(self, jobs: List[Job] = None):
-        self.next_id = 0
+        self.next_id = 1
         self.jobs = []
         if jobs is None:
             jobs = []
@@ -124,7 +124,7 @@ class SchedulingTask:
             f.write("\n--------------------------------------------------------------\n")
             f.write("Machine view\n")
             for machine in sorted(machine_view.keys()):
-                f.write("\nMachine " + str(job_id) + "\n")
+                f.write("\nMachine " + str(machine) + "\n")
                 for job_id, start, end in machine_view[machine]:
                     f.write("Occupied by job " + str(job_id) + " from time " + str(start) + " to " + str(end) + ".\n")
 
