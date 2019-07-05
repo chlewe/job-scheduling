@@ -19,9 +19,9 @@
 - good temperature function
     - goal: random walk at beginning, local search at end
     - goal: scales with problem size and timeout
-    - exponential function: `T0 + d^t`
+    - exponential function: `T0 * d^t`
     - short dry run to estimate total number of steps
-    - start temperature `T0` = 1000 (~100% chance of random walk)
+    - start temperature `T0` = 225 (~80% chance of random walk)
     - compute base / decay `d` such that final temperature ~3 (~1% chance of random walk)
     - for each problem size / timeout: same time spent per temperature
 
