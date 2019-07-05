@@ -140,15 +140,15 @@ class SchedulingTask:
         seen_machines = [op.machine]
         k = 1
         while i+k < len(schedule):
-            op, swap_job_id = schedule[i + k]
-            if swap_job_id in forbidden_job_swaps:
+            neigh_op, neigh_swap_job_id = schedule[i + k]
+            if neigh_swap_job_id in forbidden_job_swaps:
                 break
             else:
-                if op.machine in seen_machines:
+                if op.machine in seen_machines or neigh_op.machine in seen_machines:
                     swaps.append((i, i + k))
-                    forbidden_job_swaps.append(swap_job_id)
                 else:
                     seen_machines.append(op.machine)
+                forbidden_job_swaps.append(neigh_swap_job_id)
             k += 1
         return swaps
 

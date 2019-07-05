@@ -61,8 +61,8 @@ if __name__ == "__main__":
         if time() - beginning >= timeout / 5:
             break
 
-    temperature0 = 1000
-    exp_decay = 0.003 ** (1 / (sa.time * 5))
+    temperature0 = 225
+    exp_decay = (0.1/temperature0) ** (1 / (sa.time * 5))
     print("Expected number of annealing steps:", sa.time * 5)
     print("Set exponential decay factor to", exp_decay)
     last_time = 0
@@ -82,3 +82,4 @@ if __name__ == "__main__":
     print("Final temperature: {}\nTotal time steps: {}".format(sa.get_temperature(), sa.time))
 
     print("\nTime of final schedule:", sa.evaluation_function(sa.state))
+    print("The schedule found is " + ("" if scheduling_task.schedule_validity(sa.state) else "in") + "valid.")
