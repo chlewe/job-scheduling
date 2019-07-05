@@ -8,7 +8,7 @@ class SchedulingTask:
 
     # Structural stuff
     def __init__(self, jobs: List[Job] = None):
-        self.next_id = 0
+        self.next_id = 1
         self.jobs = []
         if jobs is None:
             jobs = []
@@ -93,9 +93,45 @@ class SchedulingTask:
         return True
 
     @staticmethod
+    def output_schedule(schedule, output_file):
+        """ Create actual schedule from list of operations """
+        # for each job, save when its operations are scheduled
+        job_view = {}
+        # for each machine, save when its operations are scheduled
+        machine_view = {}
+
+        for op, job_id in schedule:
+            earliest_scheduling_time = 0
+            if job_id in job_view:
+                # from job view, search current job, take the last entry (-1) and get its end time (2)
+                earliest_scheduling_time = job_view[job_id][-1][2]
+            else:
+                job_view[job_id] = []
+            if op.machine in machine_view:
+                earliest_scheduling_time = max(earliest_scheduling_time, machine_view[op.machine][-1][2])
+            else:
+                machine_view[op.machine] = []
+            end_time = earliest_scheduling_time + op.time
+            job_view[job_id].append((op.machine, earliest_scheduling_time, end_time))
+            machine_view[op.machine].append((job_id, earliest_scheduling_time, end_time))
+
+        with open(output_file, 'w') as f:
+            f.write("Job view\n")
+            for job_id in sorted(job_view.keys()):
+                f.write("\nJob " + str(job_id) + "\n")
+                for machine, start, end in job_view[job_id]:
+                    f.write("Occupy machine " + str(machine) + " from time " + str(start) + " to " + str(end) + ".\n")
+            f.write("\n--------------------------------------------------------------\n")
+            f.write("Machine view\n")
+            for machine in sorted(machine_view.keys()):
+                f.write("\nMachine " + str(machine) + "\n")
+                for job_id, start, end in machine_view[machine]:
+                    f.write("Occupied by job " + str(job_id) + " from time " + str(start) + " to " + str(end) + ".\n")
+
+
+    @staticmethod
     def get_schedule_time(schedule: List[Tuple[Operation, int]]):
         """ For a given schedule, compute how much time passes for all operations to finish """
-        # TODO: make this return a schedule, not just time
         # for each job, save how long scheduling an operation of this job
         # is blocked by the execution of a previous operation of that job
         job_blocking = {}
