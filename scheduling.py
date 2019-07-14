@@ -78,13 +78,11 @@ class SchedulingTask:
 
     def schedule_validity(self, schedule: List[Tuple[Operation, int]]):
         # Check whether operations belong to given job
-        # TODO: Clarify of above comment
         for op, job_id in schedule:
             job = self.get_job_by_id(job_id)
             if op not in job.operations:
                 return False
         # Check whether operation order within jobs is preserved
-        # TODO: Check that there are no overlapping operations
         for job, job_id in self.jobs:
             job_schedule = [op for op, j_id in schedule if j_id == job_id]
             if job.operations != job_schedule:
@@ -149,22 +147,22 @@ class SchedulingTask:
             machine_blocking[op.machine] = end_time
         return max(job_blocking.values())
 
-    @staticmethod
-    def get_neighbours_arbitrary(schedule):
-        """ For a schedule, return all valid swaps of arbitrarily-placed operations that produce a valid schedule """
-        swaps = []
-        for i, (op, job_id) in enumerate(schedule):
-            forbidden_job_swaps = [job_id]
-            k = 1
-            while i+k < len(schedule):
-                _, swap_job_id = schedule[i + k]
-                if swap_job_id in forbidden_job_swaps:
-                    break
-                else:
-                    swaps.append(tuple((i, i + k)))
-                    forbidden_job_swaps.append(swap_job_id)
-                k += 1
-        return swaps
+    #@staticmethod
+    #def get_neighbours_arbitrary(schedule):
+    #    """ For a schedule, return all valid swaps of arbitrarily-placed operations that produce a valid schedule """
+    #    swaps = []
+    #    for i, (op, job_id) in enumerate(schedule):
+    #        forbidden_job_swaps = [job_id]
+    #        k = 1
+    #        while i+k < len(schedule):
+    #            _, swap_job_id = schedule[i + k]
+    #            if swap_job_id in forbidden_job_swaps:
+    #                break
+    #            else:
+    #                swaps.append(tuple((i, i + k)))
+    #                forbidden_job_swaps.append(swap_job_id)
+    #            k += 1
+    #    return swaps
 
     @staticmethod
     def get_neighbours_local_arbitrary(schedule):

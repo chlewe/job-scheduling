@@ -17,24 +17,24 @@ def exp_series(time):
     return temperature0
 
 
-def fast_series(time):
-    global temperature0
-    return temperature0 / time
-
-
-def boltz_series(time):
-    global temperature0
-    return temperature0 / log(time + 1)
-
-
-def root_boltz_series(time):
-    global temperature0
-    return temperature0 / (log(time + 1) ** 0.5)
-
-
-def linear_series(time):
-    global temperature0
-    return max(temperature0 - 0.25 * time, 5)
+#def fast_series(time):
+#    global temperature0
+#    return temperature0 / time
+#
+#
+#def boltz_series(time):
+#    global temperature0
+#    return temperature0 / log(time + 1)
+#
+#
+#def root_boltz_series(time):
+#    global temperature0
+#    return temperature0 / (log(time + 1) ** 0.5)
+#
+#
+#def linear_series(time):
+#    global temperature0
+#    return max(temperature0 - 0.25 * time, 5)
 
 
 if __name__ == "__main__":
