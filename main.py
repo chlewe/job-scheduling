@@ -48,7 +48,6 @@ if __name__ == "__main__":
                         help='output file')
 
     args = parser.parse_args()
-
     path_to_file = args.path_to_file
     timeout = args.timeout
 
@@ -63,6 +62,7 @@ if __name__ == "__main__":
     scheduling_task = SchedulingTask()
     scheduling_task.add_from_file(path_to_file, split_format=split_format)
 
+    # Dry run to determine the expected number of steps before the timeout.
     sa = SimulatedAnnealing(lambda x: 100,
                             scheduling_task.random_schedule,
                             SchedulingTask.get_random_neighbour_arbitrary,
@@ -74,32 +74,42 @@ if __name__ == "__main__":
         if time() - beginning >= timeout / 5:
             break
 
+    # Temperature at the start of the annealing
     temperature0 = 225
-    exp_decay = (0.1/temperature0) ** (1 / (sa.time * 5))
-    print("Expected number of annealing steps:", sa.time * 5)
-    print("Set exponential decay factor to", exp_decay)
+    # Temperature that should be reached at the end of the annealing
+    final_temperature = 0.1
+    # Exponential decay is computed so that we reach `final_temperature` after the expected number of steps
+    exp_decay = (final_temperature / temperature0) ** (1 / (sa.time * 5))
     last_time = 0
 
+    print("Expected step count:      {}".format(sa.time * 5))
+    print("Exponential decay factor: {}".format(exp_decay))
+
+    # Reset annealing for actual run
     sa = SimulatedAnnealing(exp_series,
                             scheduling_task.random_schedule,
                             SchedulingTask.get_random_neighbour_arbitrary,
                             SchedulingTask.get_schedule_time)
 
-    print("Start temperature: {}".format(temperature0))
-    print("Created first random schedule with time", sa.evaluation_function(sa.state))
+    print("\nCreated random schedule.")
+    print("Start temperature:        {}".format(temperature0))
+    print("Time of random schedule:  {}".format(sa.evaluation_function(sa.state)))
+
+    # Actual annealing
     beginning = time()
     while True:
         sa.do_annealing_step()
         if time() - beginning >= timeout:
             break
-    print("Final temperature: {}\nTotal time steps: {}".format(sa.get_temperature(), sa.time))
 
-    print("\nTime of final schedule:", sa.evaluation_function(sa.state))
-    print("The schedule found is " + ("" if scheduling_task.schedule_validity(sa.state) else "in") + "valid.")
+    print("\nFinal temperature:        {}".format(sa.get_temperature()))
+    print("Time of final schedule:   {}".format(sa.evaluation_function(sa.state)))
+    print("The final schedule is {}".format("valid." if scheduling_task.schedule_validity(sa.state) else "INVALID!"))
+    print("\nTotal step count:         {}".format(sa.time))
 
     if args.output_file:
         try:
             SchedulingTask.output_schedule(sa.state, args.output_file)
-            print("Saved schedule in " + args.output_file)
+            print("\nWrote final schedule to \'{}\'.".format(args.output_file))
         except Exception:
-            print("Couldn't write output file.")
+            print("\nFailed to write to output file!")
